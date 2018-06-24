@@ -13,7 +13,8 @@ export default class Articles extends Component {
         startYear: '',
         endYear: '',
         articles:[],
-        noResults:false
+        results: '',
+        noResults: false
     };
 
     saveArticle = (article) => {
@@ -24,14 +25,14 @@ export default class Articles extends Component {
             summary:article.snippet
         }
 
-        API
-        .saveArticle(newArticle)
+        API.saveArticle(newArticle)
         .then(results => {
-            let unsavedArticles = this.state.results.filter(article => article.headline.main !== newArticle.title)
-            this.setState(({results: unsavedArticles}))
+            let unsavedArticles = this.state.results.filter(
+                article => article.headline.main !== newArticle.title);
+            this.setState({results: unsavedArticles});
         })
         .catch(err => console.log(err));
-    }
+    };
 
     handleInputChange = event => {
         let { name, value } = event.target;
@@ -54,7 +55,9 @@ export default class Articles extends Component {
 
         let { topic, startYear, endYear } = query
 
-        let queryUrl = `https://api.nytimes.com/svc/search/v2/articlesearch.json?sort=newest&page=${this.state.page}`
+        let queryUrl = `https://api.nytimes.com/svc/search/v2/articlesearch.json?sort=newest&page=${
+            this.state.page
+        }`;
         let key =  `&api-key=34ea3afd6cdb4ba0886c7977c3cd0a86`
 
         if(topic.indexOf(' ')>=0){
@@ -70,13 +73,12 @@ export default class Articles extends Component {
         }
 
         if(endYear){
-            queryUrl =+ `&end_date=${endYear}`
+            queryUrl += `&end_date=${endYear}`
         }
 
         queryUrl += key;
 
-    API
-        .queryNYT(queryUrl)
+    API.queryNYT(queryUrl)
         .then(results => {
             this.setState({
                 results:[...this.state.results, ...results.data.response.docs],
@@ -85,11 +87,14 @@ export default class Articles extends Component {
                 startYear: '',
                 endYear: ''
             }, function(){
-                this.state.results.length === 0 ?this.setState({noResults:true}) :this.setState({noResults:false})
-            });
-        })
-            .catch(err => console.log(err))
-    }
+                this.state.results.length === 0 
+                ? this.setState({noResults:true}) 
+                : this.setState({noResults:false})
+            }
+        );
+    })
+        .catch(err => console.log(err))
+};
 
     componentDidMount() {
         this.loadArticles();
